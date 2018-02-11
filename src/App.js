@@ -2,28 +2,15 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import './App.css';
 
-const ImagePath = '/images/IMG_1915.JPG';
+const ImagePath = '/images/Eldorado.jpg';
 
-function getDataURI(url) {
-  return new Promise(resolve => {
-    const image = new Image();
-    image.onload = function() {
-      const canvas = document.createElement('canvas');
-      canvas.width = this.naturalWidth;
-      canvas.height = this.naturalHeight;
-      canvas.getContext('2d').drawImage(this, 0, 0);
-      const url = canvas.toDataURL('image/jpeg');
-      resolve({width: this.width, height: this.height, url});
-    }
-    image.src = url;
-  });
-}
-
-class App extends Component {
+export default class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { labels: [] };
+    this.state = {
+      labels : JSON.parse(localStorage.getItem(ImagePath)) || []
+    };
 
     getDataURI(ImagePath).then(image => this.setState({ image }));
 
@@ -103,9 +90,11 @@ class App extends Component {
   }
 
   removeLabel(index) {
-    const labels = this.state.labels.slice();
-    labels.splice(index, 1);
-    this.setState({labels});
+    if (window.confirm(`Delete label "${this.state.labels[index].name}"?`)) {
+      const labels = this.state.labels.slice();
+      labels.splice(index, 1);
+      this.setState({labels});
+    }
   }
 
   editLabelName(index) {
@@ -127,16 +116,31 @@ class App extends Component {
           Download
         </div>
 
-        {this.state.labels.map(({name}, index) => {
-          return (
-            <div key={index}>
-              {name}
+        <table className="label-table">
+          <tbody>
+            {this.state.labels.map(({name}, index) => {
+              return (
+                <tr key={index} className="label-row">
+                  <td className="label-row-name">
+                    {name}
+                  </td>
 
-              <span onClick={() => this.removeLabel(index)}> Remove </span>
-              <span onClick={() => this.editLabelName(index)}> Edit </span>
-            </div>
-          );
-        })}
+                  <td>
+                    <span onClick={() => this.removeLabel(index)}>
+                      Remove
+                    </span>
+                  </td>
+
+                  <td>
+                    <span onClick={() => this.editLabelName(index)}>
+                      Edit
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
         <svg
           ref={node => this.svg = node}
@@ -148,10 +152,17 @@ class App extends Component {
           <image href={image.url} width={image.width} height={image.height} onClick={this.handleImageClick}/>
 
           {this.state.labels.map(({name, x, y, labelX, labelY}, index) => {
+            labelY = 800;
             return (
               <g key={index}>
-                <text x={labelX} y={labelY} textAnchor="middle" key={index} onMouseDown={() => this.selectLabel(index)}
-                  style={{'font-size': '80px', 'font-family': 'sans-serif'}}>
+                <text
+                  key={index}
+                  onMouseDown={() => this.selectLabel(index)}
+                  x={labelX}
+                  y={labelY}
+                  textAnchor="start"
+                  transform={`rotate(-45, ${labelX}, ${labelY})`}
+                  style={{'fontSize': '80px', 'fontFamily': 'sans-serif'}}>
                   {name}
                 </text>
 
@@ -163,6 +174,23 @@ class App extends Component {
       </div>
     );
   }
+
+  componentDidUpdate() {
+    localStorage.setItem(ImagePath, JSON.stringify(this.state.labels));
+  }
 }
 
-export default App;
+function getDataURI(url) {
+  return new Promise(resolve => {
+    const image = new Image();
+    image.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = this.naturalWidth;
+      canvas.height = this.naturalHeight;
+      canvas.getContext('2d').drawImage(this, 0, 0);
+      const url = canvas.toDataURL('image/jpeg');
+      resolve({width: this.width, height: this.height, url});
+    }
+    image.src = url;
+  });
+}
