@@ -149,10 +149,21 @@ export default class App extends Component {
           onMouseMove={this.handleMouseMove}
           onMouseUp={this.handleMouseUp}>
 
+          <defs>
+            <linearGradient id="linear" x1="0%" x2="0%" y1="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(0, 0, 0, 0)"/>
+              <stop offset="3%" stopColor="rgba(0, 0, 0, 0)"/>
+              <stop offset="50%" stopColor="rgba(0, 0, 0, 0.5)"/>
+              <stop offset="97%" stopColor="rgba(0, 0, 0, 0)"/>
+              <stop offset="100%" stopColor="rgba(0, 0, 0, 0)"/>
+            </linearGradient>
+          </defs>
+
           <image href={image.url} width={image.width} height={image.height} onClick={this.handleImageClick}/>
 
           {this.state.labels.map(({name, x, y, labelX, labelY}, index) => {
             labelY = 800;
+            labelX = x;
             return (
               <g key={index}>
                 <text
@@ -162,11 +173,17 @@ export default class App extends Component {
                   y={labelY}
                   textAnchor="start"
                   transform={`rotate(-45, ${labelX}, ${labelY})`}
-                  style={{'fontSize': '80px', 'fontFamily': 'sans-serif'}}>
+                  fontSize="80px">
+
                   {name}
                 </text>
 
-                <line x1={x} y1={y} x2={labelX} y2={labelY + 10} strokeWidth="4" stroke="black"/>
+                <rect
+                  x={x}
+                  y={labelY}
+                  width={1}
+                  height={y - labelY}
+                  fill="url(#linear)"/>
               </g>
             );
           })}
