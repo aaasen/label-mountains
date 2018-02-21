@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import './App.css';
 
-const ImagePath = '/images/Eldorado.jpg';
+const ImagePath = '/images/chair.jpg';
+
+// Pixels from top to place the label.
+const LabelOffset = 800;
+const LabelFontSize = "80px";
+const LabelRotation = -45;
+const LabelLineWidth = 2;
 
 export default class App extends Component {
   constructor(props) {
@@ -121,6 +127,10 @@ export default class App extends Component {
             {this.state.labels.map(({name}, index) => {
               return (
                 <tr key={index} className="label-row">
+                  <td>
+                    {index + 1}
+                  </td>
+
                   <td className="label-row-name">
                     {name}
                   </td>
@@ -152,9 +162,8 @@ export default class App extends Component {
           <defs>
             <linearGradient id="linear" x1="0%" x2="0%" y1="0%" y2="100%">
               <stop offset="0%" stopColor="rgba(0, 0, 0, 0)"/>
-              <stop offset="3%" stopColor="rgba(0, 0, 0, 0)"/>
-              <stop offset="50%" stopColor="rgba(0, 0, 0, 0.5)"/>
-              <stop offset="97%" stopColor="rgba(0, 0, 0, 0)"/>
+              <stop offset="20%" stopColor="rgba(0, 0, 0, 0.5)"/>
+              <stop offset="90%" stopColor="rgba(0, 0, 0, 0.5)"/>
               <stop offset="100%" stopColor="rgba(0, 0, 0, 0)"/>
             </linearGradient>
           </defs>
@@ -162,7 +171,7 @@ export default class App extends Component {
           <image href={image.url} width={image.width} height={image.height} onClick={this.handleImageClick}/>
 
           {this.state.labels.map(({name, x, y, labelX, labelY}, index) => {
-            labelY = 800;
+            labelY = LabelOffset;
             labelX = x;
             return (
               <g key={index}>
@@ -172,8 +181,8 @@ export default class App extends Component {
                   x={labelX}
                   y={labelY}
                   textAnchor="start"
-                  transform={`rotate(-45, ${labelX}, ${labelY})`}
-                  fontSize="80px">
+                  transform={`rotate(${LabelRotation}, ${labelX}, ${labelY})`}
+                  fontSize={LabelFontSize}>
 
                   {name}
                 </text>
@@ -181,7 +190,7 @@ export default class App extends Component {
                 <rect
                   x={x}
                   y={labelY}
-                  width={1}
+                  width={LabelLineWidth}
                   height={y - labelY}
                   fill="url(#linear)"/>
               </g>
