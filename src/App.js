@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import './App.css';
 
-const ImagePath = '/images/chair.jpg';
+const ImagePath = '/images/kendall-adventure-zone.jpg';
 
 // Pixels from top to place the label.
 const LabelOffset = 800;
